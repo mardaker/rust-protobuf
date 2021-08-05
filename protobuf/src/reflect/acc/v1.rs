@@ -249,6 +249,17 @@ impl<M: Message + 'static> FieldAccessorTrait for FieldAccessorImpl<M> {
                 get_set: SingularGetSet::Enum(ref get),
                 ..
             } => get.get_enum(message_down_cast(m)),
+            FieldAccessorFunctions::Optional(ref t) => {
+                match t
+                    .get_field(message_down_cast(m))
+                    .to_option()
+                    .expect("field unset")
+                    .as_ref()
+                {
+                    ReflectValueRef::Enum(m) => m,
+                    _ => panic!("not an enum"),
+                }
+            }
             _ => panic!(),
         }
     }
